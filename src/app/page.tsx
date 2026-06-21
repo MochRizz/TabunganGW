@@ -628,7 +628,7 @@ function RiwayatTab() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/transactions/${id}`, { method: 'DELETE' }).then((r) => r.json()),
+    mutationFn: (id: string) => apiFetch<{ success: boolean }>(`/api/transactions/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       toast.success('Transaksi berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
@@ -1062,11 +1062,11 @@ function TambahTab() {
 
   const createMutation = useMutation({
     mutationFn: (data: TransactionForm) =>
-      fetch('/api/transactions', {
+      apiFetch<Record<string, unknown>>('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }).then((r) => r.json()),
+      }),
     onSuccess: () => {
       toast.success('Transaksi berhasil ditambahkan!')
       reset({
