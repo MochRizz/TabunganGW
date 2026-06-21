@@ -56,19 +56,19 @@ function StatusBadge({ status }: { status: string }) {
   switch (status) {
     case 'approved':
       return (
-        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
+        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20">
           Disetujui
         </Badge>
       )
     case 'pending':
       return (
-        <Badge className="bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100">
+        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/20">
           Menunggu
         </Badge>
       )
     case 'rejected':
       return (
-        <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100">
+        <Badge className="bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/20">
           Ditolak
         </Badge>
       )
@@ -80,13 +80,13 @@ function StatusBadge({ status }: { status: string }) {
 function RoleBadge({ role }: { role: string }) {
   if (role === 'admin') {
     return (
-      <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 hover:bg-indigo-100">
+      <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/20">
         Admin
       </Badge>
     )
   }
   return (
-    <Badge variant="outline" className="text-muted-foreground">
+    <Badge variant="outline" className="text-white/50 border-white/20">
       User
     </Badge>
   )
@@ -162,39 +162,39 @@ export function AdminPanel() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#4f46e5]/10 flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#4f46e5]" />
+        <div className="w-10 h-10 rounded-xl bg-[#4f46e5]/30 flex items-center justify-center">
+          <Shield className="w-5 h-5 text-[#a5b4fc]" />
         </div>
         <div>
-          <h2 className="text-xl font-bold">Admin Panel</h2>
-          <p className="text-sm text-muted-foreground">Kelola pengguna dan permintaan akun</p>
+          <h2 className="text-xl font-bold text-white">Admin Panel</h2>
+          <p className="text-sm text-white/50">Kelola pengguna dan permintaan akun</p>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="border-0 shadow-sm">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 border-0 shadow-lg">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <UserCheck className="w-5 h-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                <UserCheck className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{approvedCount}</p>
-                <p className="text-xs text-muted-foreground">Total Pengguna</p>
+                <p className="text-2xl font-bold text-white">{approvedCount}</p>
+                <p className="text-xs text-white/50">Total Pengguna</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-sm">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 border-0 shadow-lg">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{pendingUsers.length}</p>
-                <p className="text-xs text-muted-foreground">Menunggu Persetujuan</p>
+                <p className="text-2xl font-bold text-white">{pendingUsers.length}</p>
+                <p className="text-xs text-white/50">Menunggu Persetujuan</p>
               </div>
             </div>
           </CardContent>
@@ -202,10 +202,10 @@ export function AdminPanel() {
       </div>
 
       {/* Pending Requests Section */}
-      <Card className="border-0 shadow-sm">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 border-0 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-500" />
+          <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
+            <Clock className="w-4 h-4 text-amber-400" />
             Permintaan Akun Baru
           </CardTitle>
         </CardHeader>
@@ -218,8 +218,8 @@ export function AdminPanel() {
             </div>
           ) : pendingUsers.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="w-10 h-10 text-muted-foreground/40 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Tidak ada permintaan akun baru</p>
+              <Users className="w-10 h-10 text-white/20 mx-auto mb-2" />
+              <p className="text-sm text-white/50">Tidak ada permintaan akun baru</p>
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
@@ -232,14 +232,14 @@ export function AdminPanel() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.2 }}
-                    className="flex items-center justify-between p-4 bg-amber-50/50 border border-amber-100 rounded-lg"
+                    className="flex items-center justify-between p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-medium text-sm truncate">{u.name}</p>
                         <StatusBadge status={u.status} />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-white/50 mt-1">
                         Diajukan {formatDate(u.createdAt)}
                       </p>
                     </div>
@@ -273,10 +273,10 @@ export function AdminPanel() {
       </Card>
 
       {/* All Users Section */}
-      <Card className="border-0 shadow-sm">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 border-0 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#4f46e5]" />
+          <CardTitle className="text-base font-semibold flex items-center gap-2 text-white">
+            <Users className="w-4 h-4 text-[#a5b4fc]" />
             Daftar Pengguna
           </CardTitle>
         </CardHeader>
@@ -289,8 +289,8 @@ export function AdminPanel() {
             </div>
           ) : allUsers.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="w-10 h-10 text-muted-foreground/40 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Belum ada pengguna</p>
+              <Users className="w-10 h-10 text-white/20 mx-auto mb-2" />
+              <p className="text-sm text-white/50">Belum ada pengguna</p>
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
@@ -306,7 +306,7 @@ export function AdminPanel() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.2 }}
-                      className="flex items-center justify-between p-4 bg-white border border-border/50 rounded-lg"
+                      className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-lg"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -319,7 +319,7 @@ export function AdminPanel() {
                           <StatusBadge status={u.status} />
                           <RoleBadge role={u.role} />
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-white/50">
                           <span>{u._count?.transactions || 0} transaksi</span>
                           <span>&middot;</span>
                           <span>Bergabung {formatDate(u.createdAt)}</span>
@@ -328,7 +328,7 @@ export function AdminPanel() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0 ml-2"
+                        className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/20 shrink-0 ml-2"
                         onClick={() => setDeleteTarget(u)}
                         disabled={isAdmin || isSelf || isMutating}
                         title={isAdmin || isSelf ? 'Tidak dapat dihapus' : 'Hapus pengguna'}
@@ -346,7 +346,7 @@ export function AdminPanel() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm bg-white/10 backdrop-blur-xl border-white/10">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-[#e11d48]" />
@@ -354,7 +354,7 @@ export function AdminPanel() {
             </DialogTitle>
             <DialogDescription>
               Apakah kamu yakin ingin menghapus pengguna{' '}
-              <strong className="text-foreground">{deleteTarget?.name}</strong>? Semua data transaksi
+              <strong className="text-white">{deleteTarget?.name}</strong>? Semua data transaksi
               pengguna ini akan ikut terhapus. Tindakan ini tidak dapat dibatalkan.
             </DialogDescription>
           </DialogHeader>
