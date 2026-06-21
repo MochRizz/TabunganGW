@@ -70,4 +70,31 @@ Stage Summary:
 - Full dark glassmorphism theme applied consistently across all 5 tabs (Dashboard, Riwayat, Laporan, Tambah, Pengaturan)
 - Visual consistency with auth screen achieved
 - No functional logic changes, only CSS class modifications
-- Lint passes with 0 errors (1 pre-existing warning from react-hook-form)
+- Lint passes with 0 errors (1 pre-existing warning from react-hook-form)---
+Task ID: 1
+Agent: Main Agent
+Task: Fix dark text on dark background in main app
+
+Work Log:
+- Analyzed page.tsx and all shadcn/ui components (Table, Input, Select, Button, Badge, Dropdown, Dialog, Skeleton, Card, Chart)
+- Identified root cause: `:root` CSS variables were set for light theme (dark text colors) while the app uses dark `#0a0a1a` background
+- Updated `:root` CSS variables in globals.css to dark theme values:
+  - `--foreground`: `#1e293b` → `#f8fafc` (white text everywhere)
+  - `--muted-foreground`: `#64748b` → `#94a3b8` (light gray)
+  - `--border`: `#e2e8f0` → `rgba(255,255,255,0.15)` (subtle white borders)
+  - `--input`: `#e2e8f0` → `rgba(255,255,255,0.15)` (subtle white input borders)
+  - `--popover`: `#ffffff` → `#1e293b` (dark popover backgrounds)
+  - `--card`: `#ffffff` → `rgba(255,255,255,0.1)` (glassmorphism card)
+  - `--secondary`, `--muted`, `--accent` → subtle white transparent variants
+  - All `*-foreground` variables → `#f8fafc` (white)
+- Updated scrollbar colors from light gray to white-transparent for dark theme
+- Updated Sonner toaster to always use `theme="dark"` instead of `useTheme()` (app is always dark)
+- Verified admin-panel.tsx and auth-screen.tsx are unaffected (both use explicit white colors)
+- Verified all shadcn/ui components now render with light text: Table headers, Input text, Select triggers, Button ghost/outline, Dropdown menus, Dialog, Chart tooltips, Skeleton, Badges
+- ESLint passed (only 1 pre-existing warning)
+- Dev server compiled successfully (GET / 200)
+
+Stage Summary:
+- Changed 3 files: globals.css, sonner.tsx
+- The CSS variable approach ensures ALL components using shadcn/ui primitives automatically get light text without modifying each component individually
+- Auth screen and admin panel already had explicit white text colors, so they remain unaffected
