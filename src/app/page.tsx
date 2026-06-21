@@ -14,6 +14,9 @@ import {
   PlusCircle,
   Settings,
   LogOut,
+  AlertTriangle,
+  Database,
+  Info,
   Search,
   ArrowDownLeft,
   ArrowUpRight,
@@ -251,6 +254,11 @@ export default function Home() {
                 <TambahTab />
               </motion.div>
             )}
+            {activeTab === 'pengaturan' && (
+              <motion.div key="pengaturan" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                <PengaturanTab />
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </main>
@@ -309,7 +317,14 @@ function SidebarContent({ activeTab, setActiveTab }: { activeTab: TabType; setAc
 
       {/* Bottom */}
       <div className="p-4 border-t border-[#e2e8f0] space-y-1">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+        <button
+          onClick={() => setActiveTab('pengaturan')}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === 'pengaturan'
+              ? 'bg-[#4f46e5] text-white'
+              : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+          }`}
+        >
           <Settings className="h-5 w-5" />
           Pengaturan
         </button>
@@ -1078,6 +1093,147 @@ function TambahTab() {
           </form>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+// ── Pengaturan Tab ─────────────────────────────────────
+function PengaturanTab() {
+  const queryClient = useQueryClient()
+  const { setActiveTab } = useAppStore()
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  const { data: countData } = useQuery<{ total: number }>({
+    queryKey: ['transactions-count'],
+    queryFn: () => fetch('/api/transactions?limit=1').then((r) => r.json()),
+  })
+
+  const resetMutation = useMutation({
+    mutationFn: () => fetch('/api/transactions/reset', { method: 'DELETE' }).then((r) => r.json()),
+    onSuccess: (data) => {
+      toast.success(data.message || 'Semua data berhasil direset')
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['reports'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions-count'] })
+      setShowConfirm(false)
+    },
+    onError: () => {
+      toast.error('Gagal mereset data. Silakan coba lagi.')
+    },
+  })
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Pengaturan</h2>
+        <p className="text-sm text-muted-foreground mt-1">Kelola preferensi dan data aplikasi Anda</p>
+      </div>
+
+      {/* App Info Card */}
+      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <Database className="h-5 w-5 text-[#4f46e5]" />
+            Informasi Data
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0]">
+            <span className="text-sm text-muted-foreground">Total Transaksi</span>
+            <span className="text-sm font-semibold text-foreground">
+              {countData?.total ?? '...'} transaksi
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0]">
+            <span className="text-sm text-muted-foreground">Versi Aplikasi</span>
+            <span className="text-sm font-semibold text-foreground">1.0.0</span>
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-muted-foreground">Penyimpanan</span>
+            <span className="text-sm font-semibold text-foreground">Lokal (SQLite)</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Reset Card */}
+      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-[#e11d48]" />
+            Zona Berbahaya
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-100">
+            <Info className="h-4 w-4 text-[#e11d48] mt-0.5 shrink-0" />
+            <p className="text-sm text-red-700 leading-relaxed">
+              Menghapus semua data transaksi tidak dapat dibatalkan. Pastikan Anda sudah mem-backup data penting sebelum melanjutkan.
+            </p>
+          </div>
+
+          {!showConfirm ? (
+            <Button
+              variant="outline"
+              className="w-full border-[#e11d48] text-[#e11d48] hover:bg-[#e11d48] hover:text-white transition-colors font-medium"
+              onClick={() => setShowConfirm(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Reset Semua Data
+            </Button>
+          ) : (
+            <div className="space-y-3 p-4 rounded-lg border-2 border-[#e11d48]/30 bg-red-50/50">
+              <p className="text-sm font-medium text-foreground">
+                Apakah Anda yakin ingin menghapus semua data?
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Tindakan ini akan menghapus seluruh {countData?.total ?? '...'} transaksi secara permanen.
+              </p>
+              <div className="flex gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setShowConfirm(false)}
+                  disabled={resetMutation.isPending}
+                >
+                  Batal
+                </Button>
+                <Button
+                  className="flex-1 bg-[#e11d48] text-white hover:bg-[#be123c] font-medium"
+                  onClick={() => resetMutation.mutate()}
+                  disabled={resetMutation.isPending}
+                >
+                  {resetMutation.isPending ? (
+                    <>
+                      <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                      Menghapus...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Ya, Hapus Semua
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* After reset — empty state prompt */}
+      {countData?.total === 0 && (
+        <div className="text-center py-6">
+          <p className="text-sm text-muted-foreground mb-3">Data transaksi kosong. Mulai catat transaksi pertama Anda!</p>
+          <Button
+            onClick={() => setActiveTab('tambah')}
+            className="bg-[#4f46e5] text-white hover:bg-[#4338ca] font-medium"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Tambah Transaksi
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
