@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAppStore } from '@/lib/store'
+import dynamic from 'next/dynamic'
+
+const Strands = dynamic(() => import('./strands'), { ssr: false })
 
 type AuthTab = 'login' | 'register'
 
@@ -117,34 +120,55 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0a0a1a] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Strands Background */}
+      <div className="fixed inset-0 z-0">
+        <Strands
+          colors={['#4f46e5', '#06b6d4', '#8b5cf6', '#f97316']}
+          count={4}
+          speed={0.4}
+          amplitude={1.2}
+          waviness={1}
+          thickness={0.8}
+          glow={2.8}
+          taper={2.5}
+          spread={1.2}
+          intensity={0.5}
+          saturation={1.5}
+          opacity={0.85}
+          scale={1.8}
+        />
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-[#0a0a1a]/40" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
         {/* Logo & App Name */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#4f46e5] mb-4 shadow-lg shadow-indigo-200">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#4f46e5] mb-4 shadow-lg shadow-indigo-500/30">
             <Wallet className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-[#4f46e5]">TabunganKu</h1>
-          <p className="text-sm text-muted-foreground mt-1">Kelola keuanganmu dengan mudah</p>
+          <h1 className="text-2xl font-bold text-white">TabunganKu</h1>
+          <p className="text-sm text-white/60 mt-1">Kelola keuanganmu dengan mudah</p>
         </div>
 
         {/* Auth Card */}
-        <Card className="shadow-lg rounded-xl border-0">
+        <Card className="shadow-2xl rounded-xl border-0 bg-white/10 backdrop-blur-xl">
           <CardHeader className="pb-0 pt-6 px-6">
             {/* Tab Switcher */}
-            <div className="flex rounded-lg bg-muted/50 p-1 gap-1">
+            <div className="flex rounded-lg bg-white/10 p-1 gap-1">
               <button
                 type="button"
                 onClick={() => handleTabSwitch('login')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all ${
                   activeTab === 'login'
-                    ? 'bg-white text-[#4f46e5] shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-white/90 text-[#4f46e5] shadow-sm'
+                    : 'text-white/60 hover:text-white/90'
                 }`}
               >
                 <LogIn className="w-4 h-4" />
@@ -155,8 +179,8 @@ export function AuthScreen() {
                 onClick={() => handleTabSwitch('register')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all ${
                   activeTab === 'register'
-                    ? 'bg-white text-[#4f46e5] shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-white/90 text-[#4f46e5] shadow-sm'
+                    : 'text-white/60 hover:text-white/90'
                 }`}
               >
                 <UserPlus className="w-4 h-4" />
@@ -168,17 +192,17 @@ export function AuthScreen() {
           <CardContent className="px-6 pb-6 pt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="auth-name" className="text-sm font-medium text-foreground">
+                <label htmlFor="auth-name" className="text-sm font-medium text-white/80">
                   Nama
                 </label>
                 <div className="relative">
-                  <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                   <Input
                     id="auth-name"
                     placeholder="Masukkan nama kamu"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-10 h-11"
+                    className="pl-10 h-11 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#4f46e5]"
                     disabled={loading}
                   />
                 </div>
@@ -188,7 +212,7 @@ export function AuthScreen() {
                 <motion.div
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-[#e11d48] bg-red-50 border border-red-100 rounded-lg px-3 py-2"
+                  className="text-sm text-[#fca5a5] bg-red-500/20 border border-red-500/30 rounded-lg px-3 py-2"
                 >
                   {error}
                 </motion.div>
@@ -196,7 +220,7 @@ export function AuthScreen() {
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium"
+                className="w-full h-11 bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium shadow-lg shadow-indigo-500/30"
                 disabled={loading || !name.trim()}
               >
                 {loading ? (
@@ -219,7 +243,7 @@ export function AuthScreen() {
             </form>
 
             {/* Admin Login Link */}
-            <div className="mt-6 pt-4 border-t">
+            <div className="mt-6 pt-4 border-t border-white/10">
               <button
                 type="button"
                 onClick={() => {
@@ -227,7 +251,7 @@ export function AuthScreen() {
                   setPin('')
                   setError('')
                 }}
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[#4f46e5] transition-colors mx-auto"
+                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/80 transition-colors mx-auto"
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Masuk sebagai Admin
@@ -251,15 +275,15 @@ export function AuthScreen() {
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <Card className="w-full max-w-sm shadow-xl border-0 rounded-xl">
+              <Card className="w-full max-w-sm shadow-2xl border-0 rounded-xl bg-white/10 backdrop-blur-xl">
                 <CardHeader className="pb-2 pt-6 px-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#4f46e5]/10 flex items-center justify-center">
-                      <ShieldCheck className="w-5 h-5 text-[#4f46e5]" />
+                    <div className="w-10 h-10 rounded-lg bg-[#4f46e5]/30 flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5 text-[#a5b4fc]" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold">Admin Login</h3>
-                      <p className="text-xs text-muted-foreground">Masuk sebagai administrator</p>
+                      <h3 className="text-lg font-semibold text-white">Admin Login</h3>
+                      <p className="text-xs text-white/50">Masuk sebagai administrator</p>
                     </div>
                   </div>
                 </CardHeader>
@@ -272,29 +296,29 @@ export function AuthScreen() {
                     className="space-y-4"
                   >
                     <div className="space-y-2">
-                      <label htmlFor="admin-name" className="text-sm font-medium text-foreground">
+                      <label htmlFor="admin-name" className="text-sm font-medium text-white/80">
                         Nama
                       </label>
                       <Input
                         id="admin-name"
                         value="Admin"
                         disabled
-                        className="h-11 bg-muted"
+                        className="h-11 bg-white/10 border-white/20 text-white/60"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="admin-pin" className="text-sm font-medium text-foreground">
+                      <label htmlFor="admin-pin" className="text-sm font-medium text-white/80">
                         PIN
                       </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                         <Input
                           id="admin-pin"
                           type="password"
                           placeholder="Masukkan 4 digit PIN"
                           value={pin}
                           onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                          className="pl-10 h-11"
+                          className="pl-10 h-11 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#4f46e5]"
                           maxLength={4}
                           disabled={loading}
                         />
@@ -305,7 +329,7 @@ export function AuthScreen() {
                       <motion.div
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-sm text-[#e11d48] bg-red-50 border border-red-100 rounded-lg px-3 py-2"
+                        className="text-sm text-[#fca5a5] bg-red-500/20 border border-red-500/30 rounded-lg px-3 py-2"
                       >
                         {error}
                       </motion.div>
@@ -315,7 +339,7 @@ export function AuthScreen() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="flex-1 h-11"
+                        className="flex-1 h-11 border-white/20 text-white/70 hover:bg-white/10 hover:text-white"
                         onClick={() => setShowAdminDialog(false)}
                         disabled={loading}
                       >
@@ -323,7 +347,7 @@ export function AuthScreen() {
                       </Button>
                       <Button
                         type="submit"
-                        className="flex-1 h-11 bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium"
+                        className="flex-1 h-11 bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium shadow-lg shadow-indigo-500/30"
                         disabled={loading || pin.length !== 4}
                       >
                         {loading ? (

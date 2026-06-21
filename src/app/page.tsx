@@ -59,6 +59,10 @@ import {
 import { useAppStore, type TabType } from '@/lib/store'
 import { AuthScreen } from '@/components/auth-screen'
 import { AdminPanel } from '@/components/admin-panel'
+import dynamic from 'next/dynamic'
+
+const Strands = dynamic(() => import('@/components/strands'), { ssr: false })
+
 import {
   formatCurrency,
   formatDate,
@@ -239,7 +243,26 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#f8f9ff]">
+    <div className="min-h-screen flex bg-[#f8f9ff] relative">
+      {/* Subtle animated background */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-30">
+        <Strands
+          colors={['#4f46e5', '#06b6d4', '#8b5cf6']}
+          count={2}
+          speed={0.3}
+          amplitude={0.8}
+          waviness={0.8}
+          thickness={0.5}
+          glow={2}
+          taper={3}
+          spread={1}
+          intensity={0.4}
+          saturation={1.2}
+          opacity={0.6}
+          scale={2}
+        />
+      </div>
+
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-[#e2e8f0] z-30">
         <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} user={user} onLogout={handleLogout} />
