@@ -243,40 +243,41 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#f8f9ff] relative">
-      {/* Subtle animated background */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-30">
+    <div className="min-h-screen flex bg-[#0a0a1a] relative overflow-hidden">
+      {/* Animated background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <Strands
-          colors={['#4f46e5', '#06b6d4', '#8b5cf6']}
-          count={2}
-          speed={0.3}
-          amplitude={0.8}
-          waviness={0.8}
-          thickness={0.5}
-          glow={2}
-          taper={3}
-          spread={1}
-          intensity={0.4}
-          saturation={1.2}
-          opacity={0.6}
-          scale={2}
+          colors={['#4f46e5', '#06b6d4', '#8b5cf6', '#f97316']}
+          count={4}
+          speed={0.4}
+          amplitude={1.2}
+          waviness={1}
+          thickness={0.8}
+          glow={2.8}
+          taper={2.5}
+          spread={1.2}
+          intensity={0.5}
+          saturation={1.5}
+          opacity={0.85}
+          scale={1.8}
         />
+        <div className="absolute inset-0 bg-[#0a0a1a]/40" />
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-[#e2e8f0] z-30">
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white/5 backdrop-blur-xl border-r border-white/10 z-30">
         <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} user={user} onLogout={handleLogout} />
       </aside>
 
       {/* Mobile Sidebar Overlay */}
       {isMobileNavVisible && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           onClick={() => setIsMobileNavVisible(false)}
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-white border-r border-[#e2e8f0] z-50 lg:hidden transform transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 w-64 bg-white/5 backdrop-blur-xl border-r border-white/10 z-50 lg:hidden transform transition-transform duration-200 ${
           isMobileNavVisible ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -286,12 +287,12 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1 lg:pl-64 pb-20 lg:pb-0">
         {/* Mobile Header */}
-        <header className="lg:hidden sticky top-0 z-20 bg-white border-b border-[#e2e8f0] px-4 py-3 flex items-center justify-between">
-          <button onClick={() => setIsMobileNavVisible(true)} className="p-1.5 rounded-md hover:bg-secondary" aria-label="Buka menu">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+        <header className="lg:hidden sticky top-0 z-20 bg-white/5 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
+          <button onClick={() => setIsMobileNavVisible(true)} className="p-1.5 rounded-md hover:bg-white/10" aria-label="Buka menu">
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
           </button>
-          <span className="font-bold text-[#4f46e5]">TabunganKu</span>
-          <span className="text-xs text-muted-foreground">{user.name}</span>
+          <span className="font-bold text-[#a5b4fc]">TabunganKu</span>
+          <span className="text-xs text-white/50">{user.name}</span>
         </header>
 
         <div className="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">
@@ -331,7 +332,7 @@ export default function Home() {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#e2e8f0] z-30 px-2 pb-[env(safe-area-inset-bottom)]">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/5 backdrop-blur-xl border-t border-white/10 z-30 px-2 pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-around py-1.5">
           {navItems.map((item) => (
             <button
@@ -339,8 +340,8 @@ export default function Home() {
               onClick={() => setActiveTab(item.id)}
               className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors min-w-[56px] ${
                 activeTab === item.id
-                  ? 'text-[#4f46e5]'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-[#a5b4fc]'
+                  : 'text-white/40 hover:text-white/80'
               }`}
               aria-label={item.label}
             >
@@ -360,9 +361,9 @@ function SidebarContent({ activeTab, setActiveTab, user, onLogout }: { activeTab
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-6 border-b border-[#e2e8f0]">
-        <h1 className="text-xl font-bold text-[#4f46e5]">TabunganKu</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Halo, {user.name} 👋</p>
+      <div className="p-6 border-b border-white/10">
+        <h1 className="text-xl font-bold text-white">TabunganKu</h1>
+        <p className="text-xs text-white/50 mt-0.5">Halo, {user.name} 👋</p>
       </div>
 
       {/* Navigation */}
@@ -374,7 +375,7 @@ function SidebarContent({ activeTab, setActiveTab, user, onLogout }: { activeTab
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               activeTab === item.id
                 ? 'bg-[#4f46e5] text-white'
-                : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                : 'text-white/50 hover:bg-white/10 hover:text-white'
             }`}
           >
             {item.icon}
@@ -384,13 +385,13 @@ function SidebarContent({ activeTab, setActiveTab, user, onLogout }: { activeTab
       </nav>
 
       {/* Bottom */}
-      <div className="p-4 border-t border-[#e2e8f0] space-y-1">
+      <div className="p-4 border-t border-white/10 space-y-1">
         <button
           onClick={() => setActiveTab('pengaturan')}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
             activeTab === 'pengaturan'
               ? 'bg-[#4f46e5] text-white'
-              : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+              : 'text-white/50 hover:bg-white/10 hover:text-white'
           }`}
         >
           <Settings className="h-5 w-5" />
@@ -398,7 +399,7 @@ function SidebarContent({ activeTab, setActiveTab, user, onLogout }: { activeTab
         </button>
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/50 hover:bg-red-500/20 hover:text-red-400 transition-colors"
         >
           <LogOut className="h-5 w-5" />
           Keluar
@@ -437,12 +438,12 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Halo, {useAppStore.getState().user?.name ?? 'User'} 👋</h2>
-          <p className="text-muted-foreground text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
+          <h2 className="text-2xl font-bold text-white">Halo, {useAppStore.getState().user?.name ?? 'User'} 👋</h2>
+          <p className="text-white/50 text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
         </div>
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
+            <p className="text-white/50 text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
             <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Coba Lagi</Button>
           </CardContent>
         </Card>
@@ -464,13 +465,13 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
       <div>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Halo, {user?.name ?? 'User'} 👋</h2>
-            <p className="text-muted-foreground text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
+            <h2 className="text-2xl font-bold text-white">Halo, {user?.name ?? 'User'} 👋</h2>
+            <p className="text-white/50 text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
           </div>
           <Button
             variant="outline"
             size="icon"
-            className="h-9 w-9 border-[#e2e8f0]"
+            className="h-9 w-9 border-white/20 text-white hover:bg-white/10"
             onClick={() => refetch()}
             disabled={isFetching}
           >
@@ -504,27 +505,27 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
 
       {/* Income & Expense Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Pemasukan Bulan Ini</p>
+                <p className="text-sm text-white/50">Pemasukan Bulan Ini</p>
                 <p className="text-xl font-bold text-[#059669] mt-1">{formatCurrency(data.totalIncomeThisMonth)}</p>
               </div>
-              <div className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
                 <ArrowDownLeft className="h-5 w-5 text-[#059669]" />
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Pengeluaran Bulan Ini</p>
+                <p className="text-sm text-white/50">Pengeluaran Bulan Ini</p>
                 <p className="text-xl font-bold text-[#e11d48] mt-1">{formatCurrency(data.totalExpenseThisMonth)}</p>
               </div>
-              <div className="h-10 w-10 rounded-full bg-rose-50 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-full bg-rose-500/20 flex items-center justify-center">
                 <ArrowUpRight className="h-5 w-5 text-[#e11d48]" />
               </div>
             </div>
@@ -535,9 +536,9 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expense by Category Donut */}
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">Pengeluaran per Kategori</CardTitle>
+            <CardTitle className="text-base font-semibold text-white">Pengeluaran per Kategori</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             {pieData.length > 0 ? (
@@ -562,7 +563,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
                 </PieChart>
               </ChartContainer>
             ) : (
-              <div className="h-[280px] flex items-center justify-center text-muted-foreground text-sm">
+              <div className="h-[280px] flex items-center justify-center text-white/50 text-sm">
                 Belum ada pengeluaran bulan ini
               </div>
             )}
@@ -570,12 +571,12 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
         </Card>
 
         {/* Recent Transactions */}
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-base font-semibold">Transaksi Terbaru</CardTitle>
+            <CardTitle className="text-base font-semibold text-white">Transaksi Terbaru</CardTitle>
             <button
               onClick={() => onNavigate('riwayat')}
-              className="text-sm text-[#4f46e5] font-medium hover:underline"
+              className="text-sm text-[#a5b4fc] font-medium hover:underline"
             >
               Lihat Semua
             </button>
@@ -588,7 +589,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
                     <div
                       className="h-9 w-9 rounded-full flex items-center justify-center shrink-0"
                       style={{
-                        backgroundColor: tx.type === 'income' ? '#ecfdf5' : '#fff1f2',
+                        backgroundColor: tx.type === 'income' ? 'rgba(5,150,105,0.15)' : 'rgba(225,29,72,0.15)',
                         color: tx.type === 'income' ? '#059669' : '#e11d48',
                       }}
                     >
@@ -596,7 +597,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{tx.description}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(tx.date)}</p>
+                      <p className="text-xs text-white/50">{formatDate(tx.date)}</p>
                     </div>
                   </div>
                   <span
@@ -674,24 +675,24 @@ function RiwayatTab() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Riwayat Transaksi</h2>
+      <h2 className="text-2xl font-bold text-white">Riwayat Transaksi</h2>
 
       {/* Error State */}
       {isError && (
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
+            <p className="text-white/50 text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
             <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Coba Lagi</Button>
           </CardContent>
         </Card>
       )}
 
       {/* Filters */}
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
               <Input
                 placeholder="Cari transaksi..."
                 value={search}
@@ -744,7 +745,7 @@ function RiwayatTab() {
       </Card>
 
       {/* Table */}
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-4 space-y-3">
@@ -769,14 +770,14 @@ function RiwayatTab() {
                   <TableBody>
                     {data?.transactions.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={5} className="text-center py-8 text-white/50">
                           Tidak ada transaksi ditemukan
                         </TableCell>
                       </TableRow>
                     )}
                     {data?.transactions.map((tx) => (
                       <TableRow key={tx.id}>
-                        <TableCell className="text-sm text-muted-foreground">{formatDate(tx.date)}</TableCell>
+                        <TableCell className="text-sm text-white/50">{formatDate(tx.date)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {CATEGORY_ICONS[tx.category] || <CircleDollarSign className="h-4 w-4" />}
@@ -825,9 +826,9 @@ function RiwayatTab() {
               </div>
 
               {/* Mobile Cards */}
-              <div className="md:hidden divide-y divide-border">
+              <div className="md:hidden divide-y divide-white/10">
                 {data?.transactions.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground text-sm">Tidak ada transaksi ditemukan</div>
+                  <div className="text-center py-8 text-white/50 text-sm">Tidak ada transaksi ditemukan</div>
                 )}
                 {data?.transactions.map((tx) => (
                   <div key={tx.id} className="p-4 flex items-center justify-between">
@@ -835,7 +836,7 @@ function RiwayatTab() {
                       <div
                         className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
                         style={{
-                          backgroundColor: tx.type === 'income' ? '#ecfdf5' : '#fff1f2',
+                          backgroundColor: tx.type === 'income' ? 'rgba(5,150,105,0.15)' : 'rgba(225,29,72,0.15)',
                           color: tx.type === 'income' ? '#059669' : '#e11d48',
                         }}
                       >
@@ -844,7 +845,7 @@ function RiwayatTab() {
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{tx.description}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs text-muted-foreground">{formatDate(tx.date)}</span>
+                          <span className="text-xs text-white/50">{formatDate(tx.date)}</span>
                           <Badge
                             variant="secondary"
                             className="text-[10px] px-1.5 py-0"
@@ -890,7 +891,7 @@ function RiwayatTab() {
       {/* Pagination */}
       {data && data.totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white/50">
             Menampilkan {((data.page - 1) * data.limit) + 1}–{Math.min(data.page * data.limit, data.total)} dari {data.total} transaksi
           </p>
           <div className="flex items-center gap-1">
@@ -952,10 +953,10 @@ function LaporanTab() {
   if (isError) {
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold">Laporan Pengeluaran</h2>
-        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+        <h2 className="text-2xl font-bold text-white">Laporan Pengeluaran</h2>
+        <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
           <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
+            <p className="text-white/50 text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
             <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Coba Lagi</Button>
           </CardContent>
         </Card>
@@ -968,12 +969,12 @@ function LaporanTab() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Laporan Pengeluaran</h2>
+      <h2 className="text-2xl font-bold text-white">Laporan Pengeluaran</h2>
 
       {/* Monthly Trend */}
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">Tren Bulanan</CardTitle>
+          <CardTitle className="text-base font-semibold text-white">Tren Bulanan</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
           {isLoading ? (
@@ -981,17 +982,17 @@ function LaporanTab() {
           ) : monthlyTrend.length > 0 ? (
             <ChartContainer config={barChartConfig} className="h-[350px] w-full">
               <BarChart data={monthlyTrend} barGap={4} barCategoryGap="20%">
-                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e2e8f0" />
+                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                 <XAxis
                   dataKey="month"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.4)' }}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.4)' }}
                   tickFormatter={(value: number) => `${(value / 1000000).toFixed(1)}jt`}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
@@ -1005,9 +1006,9 @@ function LaporanTab() {
       </Card>
 
       {/* Category Breakdown */}
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">Breakdown Kategori Bulan Ini</CardTitle>
+          <CardTitle className="text-base font-semibold text-white">Breakdown Kategori Bulan Ini</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
           {isLoading ? (
@@ -1032,10 +1033,10 @@ function LaporanTab() {
                     </div>
                     <div className="text-right">
                       <span className="text-sm font-semibold">{formatCurrency(item.amount)}</span>
-                      <span className="text-xs text-muted-foreground ml-2">({item.percentage.toFixed(1)}%)</span>
+                      <span className="text-xs text-white/50 ml-2">({item.percentage.toFixed(1)}%)</span>
                     </div>
                   </div>
-                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -1048,7 +1049,7 @@ function LaporanTab() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Belum ada data pengeluaran bulan ini</p>
+            <p className="text-sm text-white/50 text-center py-8">Belum ada data pengeluaran bulan ini</p>
           )}
         </CardContent>
       </Card>
@@ -1120,9 +1121,9 @@ function TambahTab() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Tambah Transaksi</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">Tambah Transaksi</h2>
 
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Type Toggle */}
@@ -1135,7 +1136,7 @@ function TambahTab() {
                   className={`flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold transition-all border-2 ${
                     selectedType === 'income'
                       ? 'bg-[#059669] border-[#059669] text-white'
-                      : 'bg-white border-[#e2e8f0] text-muted-foreground hover:border-[#059669]/50'
+                      : 'bg-white/10 border-white/20 text-white/50 hover:border-[#059669]/50'
                   }`}
                 >
                   <ArrowDownLeft className="h-4 w-4" />
@@ -1147,7 +1148,7 @@ function TambahTab() {
                   className={`flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold transition-all border-2 ${
                     selectedType === 'expense'
                       ? 'bg-[#e11d48] border-[#e11d48] text-white'
-                      : 'bg-white border-[#e2e8f0] text-muted-foreground hover:border-[#e11d48]/50'
+                      : 'bg-white/10 border-white/20 text-white/50 hover:border-[#e11d48]/50'
                   }`}
                 >
                   <ArrowUpRight className="h-4 w-4" />
@@ -1160,7 +1161,7 @@ function TambahTab() {
             <div>
               <label className="text-sm font-medium mb-2 block">Jumlah</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">Rp</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white/50 font-medium">Rp</span>
                 <Input
                   type="number"
                   placeholder="0"
@@ -1255,48 +1256,48 @@ function PengaturanTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Pengaturan</h2>
-        <p className="text-sm text-muted-foreground mt-1">Kelola preferensi dan data aplikasi Anda</p>
+        <h2 className="text-xl font-semibold text-white">Pengaturan</h2>
+        <p className="text-sm text-white/50 mt-1">Kelola preferensi dan data aplikasi Anda</p>
       </div>
 
       {/* App Info Card */}
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <CardTitle className="text-base font-semibold text-white flex items-center gap-2">
             <Database className="h-5 w-5 text-[#4f46e5]" />
             Informasi Data
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0]">
-            <span className="text-sm text-muted-foreground">Total Transaksi</span>
-            <span className="text-sm font-semibold text-foreground">
+          <div className="flex items-center justify-between py-2 border-b border-white/10">
+            <span className="text-sm text-white/50">Total Transaksi</span>
+            <span className="text-sm font-semibold text-white">
               {countData?.total ?? '...'} transaksi
             </span>
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0]">
-            <span className="text-sm text-muted-foreground">Versi Aplikasi</span>
-            <span className="text-sm font-semibold text-foreground">1.0.0</span>
+          <div className="flex items-center justify-between py-2 border-b border-white/10">
+            <span className="text-sm text-white/50">Versi Aplikasi</span>
+            <span className="text-sm font-semibold text-white">1.0.0</span>
           </div>
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-muted-foreground">Penyimpanan</span>
-            <span className="text-sm font-semibold text-foreground">Lokal (SQLite)</span>
+            <span className="text-sm text-white/50">Penyimpanan</span>
+            <span className="text-sm font-semibold text-white">Lokal (SQLite)</span>
           </div>
         </CardContent>
       </Card>
 
       {/* Reset Card */}
-      <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+      <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <CardTitle className="text-base font-semibold text-white flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-[#e11d48]" />
             Zona Berbahaya
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-100">
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
             <Info className="h-4 w-4 text-[#e11d48] mt-0.5 shrink-0" />
-            <p className="text-sm text-red-700 leading-relaxed">
+            <p className="text-sm text-red-400 leading-relaxed">
               Menghapus semua data transaksi tidak dapat dibatalkan. Pastikan Anda sudah mem-backup data penting sebelum melanjutkan.
             </p>
           </div>
@@ -1311,11 +1312,11 @@ function PengaturanTab() {
               Reset Semua Data
             </Button>
           ) : (
-            <div className="space-y-3 p-4 rounded-lg border-2 border-[#e11d48]/30 bg-red-50/50">
-              <p className="text-sm font-medium text-foreground">
+            <div className="space-y-3 p-4 rounded-lg border-2 border-[#e11d48]/30 bg-red-500/10">
+              <p className="text-sm font-medium text-white">
                 Apakah Anda yakin ingin menghapus semua data?
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/50">
                 Tindakan ini akan menghapus seluruh {countData?.total ?? '...'} transaksi secara permanen.
               </p>
               <div className="flex gap-2 pt-1">
@@ -1353,7 +1354,7 @@ function PengaturanTab() {
       {/* After reset — empty state prompt */}
       {countData?.total === 0 && (
         <div className="text-center py-6">
-          <p className="text-sm text-muted-foreground mb-3">Data transaksi kosong. Mulai catat transaksi pertama Anda!</p>
+          <p className="text-sm text-white/50 mb-3">Data transaksi kosong. Mulai catat transaksi pertama Anda!</p>
           <Button
             onClick={() => setActiveTab('tambah')}
             className="bg-[#4f46e5] text-white hover:bg-[#4338ca] font-medium"
