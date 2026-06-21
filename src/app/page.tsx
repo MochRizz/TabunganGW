@@ -57,8 +57,8 @@ import {
 } from 'recharts'
 
 import { useAppStore, type TabType } from '@/lib/store'
-import AuthScreen from '@/components/auth-screen'
-import AdminPanel from '@/components/admin-panel'
+import { AuthScreen } from '@/components/auth-screen'
+import { AdminPanel } from '@/components/admin-panel'
 import {
   formatCurrency,
   formatDate,
@@ -407,7 +407,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
     )
   }
 
-  if (!data || data.error) {
+  if (!data) {
     return (
       <div className="space-y-6">
         <div>
