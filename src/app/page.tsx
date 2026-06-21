@@ -106,7 +106,10 @@ import {
 // ── Safe Fetch Helper ────────────────────────────────
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   try {
-    const res = await fetch(url, init)
+    const user = useAppStore.getState().user
+    const headers = new Headers(init?.headers)
+    if (user) headers.set('X-User-Id', user.id)
+    const res = await fetch(url, { ...init, headers })
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
       throw new Error((body as Record<string, string>).error || `API error ${res.status}`)
