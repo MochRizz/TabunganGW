@@ -99,6 +99,16 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart'
 
+// ── Safe Fetch Helper ────────────────────────────────
+async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, init)
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error((body as Record<string, string>).error || `API error ${res.status}`)
+  }
+  return res.json() as Promise<T>
+}
+
 // ── Types ──────────────────────────────────────────────
 interface Transaction {
   id: string
@@ -341,7 +351,7 @@ function SidebarContent({ activeTab, setActiveTab }: { activeTab: TabType; setAc
 function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ['dashboard'],
-    queryFn: () => fetch('/api/dashboard').then((r) => r.json()),
+    queryFn: () => apiFetch<DashboardData>('/api/dashboard'),
   })
 
   if (isLoading) {
@@ -361,10 +371,27 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
     )
   }
 
-  if (!data) return null
+  if (!data || data.error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Halo, Budi 👋</h2>
+          <p className="text-muted-foreground text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
+        </div>
+        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+          <CardContent className="p-8 text-center">
+            <p className="text-muted-foreground text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
+            <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Coba Lagi</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
+  const expenseByCategory = data.expenseByCategory ?? []
+  const recentTransactions = data.recentTransactions ?? []
   const saldoPositive = data.percentageChange >= 0
-  const pieData = data.expenseByCategory.map((item) => ({
+  const pieData = expenseByCategory.map((item) => ({
     name: item.category,
     value: item.amount,
   }))
@@ -480,7 +507,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
           </CardHeader>
           <CardContent className="p-4">
             <div className="space-y-3 max-h-[280px] overflow-y-auto custom-scrollbar">
-              {data.recentTransactions.map((tx) => (
+              {recentTransactions.map((tx) => (
                 <div key={tx.id} className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -540,12 +567,12 @@ function RiwayatTab() {
     return ''
   }
 
-  const { data, isLoading } = useQuery<TransactionsResponse>({
+  const { data, isLoading, isError } = useQuery<TransactionsResponse>({
     queryKey: ['transactions', { search, category, type, dateRange, page, limit }],
     queryFn: () =>
-      fetch(
+      apiFetch<TransactionsResponse>(
         `/api/transactions?search=${search}&category=${category}&type=${type}${getDateParams()}&page=${page}&limit=${limit}`
-      ).then((r) => r.json()),
+      ),
   })
 
   const deleteMutation = useMutation({
@@ -573,6 +600,16 @@ function RiwayatTab() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Riwayat Transaksi</h2>
+
+      {/* Error State */}
+      {isError && (
+        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+          <CardContent className="p-8 text-center">
+            <p className="text-muted-foreground text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
+            <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Coba Lagi</Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
@@ -832,10 +869,27 @@ function RiwayatTab() {
 
 // ── Laporan Tab ────────────────────────────────────────
 function LaporanTab() {
-  const { data, isLoading } = useQuery<ReportData>({
+  const { data, isLoading, isError } = useQuery<ReportData>({
     queryKey: ['reports'],
-    queryFn: () => fetch('/api/reports?months=6').then((r) => r.json()),
+    queryFn: () => apiFetch<ReportData>('/api/reports?months=6'),
   })
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold">Laporan Pengeluaran</h2>
+        <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
+          <CardContent className="p-8 text-center">
+            <p className="text-muted-foreground text-sm">Gagal memuat data. Pastikan database sudah terhubung.</p>
+            <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Coba Lagi</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const monthlyTrend = data?.monthlyTrend ?? []
+  const categoryBreakdown = data?.categoryBreakdown ?? []
 
   return (
     <div className="space-y-6">
@@ -849,9 +903,9 @@ function LaporanTab() {
         <CardContent className="p-4">
           {isLoading ? (
             <Skeleton className="h-[350px] w-full" />
-          ) : data?.monthlyTrend ? (
+          ) : monthlyTrend.length > 0 ? (
             <ChartContainer config={barChartConfig} className="h-[350px] w-full">
-              <BarChart data={data.monthlyTrend} barGap={4} barCategoryGap="20%">
+              <BarChart data={monthlyTrend} barGap={4} barCategoryGap="20%">
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis
                   dataKey="month"
@@ -890,9 +944,9 @@ function LaporanTab() {
                 </div>
               ))}
             </div>
-          ) : data?.categoryBreakdown && data.categoryBreakdown.length > 0 ? (
+          ) : categoryBreakdown.length > 0 ? (
             <div className="space-y-5">
-              {data.categoryBreakdown.map((item) => (
+              {categoryBreakdown.map((item) => (
                 <div key={item.category} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1105,11 +1159,11 @@ function PengaturanTab() {
 
   const { data: countData } = useQuery<{ total: number }>({
     queryKey: ['transactions-count'],
-    queryFn: () => fetch('/api/transactions?limit=1').then((r) => r.json()),
+    queryFn: () => apiFetch<{ total: number }>('/api/transactions?limit=1'),
   })
 
   const resetMutation = useMutation({
-    mutationFn: () => fetch('/api/transactions/reset', { method: 'DELETE' }).then((r) => r.json()),
+    mutationFn: () => apiFetch<{ success: boolean; deletedCount: number; message: string }>('/api/transactions/reset', { method: 'DELETE' }),
     onSuccess: (data) => {
       toast.success(data.message || 'Semua data berhasil direset')
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
