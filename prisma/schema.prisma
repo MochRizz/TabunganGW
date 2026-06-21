@@ -3,9 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// Vercel Postgres requires a relationMode when using serverless
+// This is handled automatically via the DATABASE_URL from Vercel
 
 model Transaction {
   id          String   @id @default(cuid())
@@ -16,4 +19,8 @@ model Transaction {
   date        DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([date])
+  @@index([category])
 }
