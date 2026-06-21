@@ -138,3 +138,33 @@ Stage Summary:
 - Auth screen component with login, register, and admin login flows
 - Admin panel component with user management (approve, reject, delete)
 - Both components use shadcn/ui, Framer Motion, TanStack Query, Zustand store
+---
+Task ID: 4
+Agent: main-orchestrator
+Task: Add refresh button, user auth system, and admin panel
+
+Work Log:
+- Added RefreshCw icon import and refresh button to Dashboard (spin animation while fetching)
+- Updated Prisma schema: added User model (id, name, role, status) and userId relation on Transaction
+- Force-reset Neon DB and re-seeded with Admin, Budi (approved), Rizky (pending), Sari (pending) users + 8 sample transactions for Budi
+- Created 6 new API routes: auth/request-account, auth/login, admin/users, admin/users/[id]/approve, admin/users/[id]/reject, admin/users/[id]/delete
+- Updated all 5 existing API routes to filter by userId via X-User-Id header
+- Created AuthScreen component: login tab, register tab, admin PIN dialog
+- Created AdminPanel component: stats cards, pending requests with approve/reject, all users list with delete
+- Updated Zustand store: added AppUser interface, user state, setUser action, admin to TabType
+- Updated page.tsx: auth gate, dynamic nav items (admin tab for admins), mobile header with user name, functional logout, named imports fix, apiFetch with X-User-Id header
+- Fixed 3 build issues: named imports, data.error type, missing X-User-Id header
+- Verified end-to-end on live site (tabungangw.vercel.app):
+  - Auth screen renders correctly
+  - User login shows personalized dashboard with real data
+  - Admin login with PIN "1234" works
+  - Admin panel shows pending users with Setujui/Tolak buttons
+  - Approving a user allows them to log in
+  - Each user only sees their own transactions
+
+Stage Summary:
+- Full user authentication system with registration approval flow
+- Admin panel for managing users (approve/reject/delete)
+- Dashboard refresh button with loading animation
+- Admin PIN: "1234" (login name: "Admin")
+- Live at https://tabungangw.vercel.app
