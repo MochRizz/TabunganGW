@@ -1,6 +1,16 @@
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
+const EMPTY_DASHBOARD = {
+  totalSaldo: 0,
+  totalIncomeThisMonth: 0,
+  totalExpenseThisMonth: 0,
+  recentTransactions: [],
+  expenseByCategory: [],
+  previousMonthSaldo: 0,
+  percentageChange: 0,
+}
+
 export async function GET() {
   try {
     const now = new Date()
@@ -82,6 +92,6 @@ export async function GET() {
     })
   } catch (error) {
     console.error('Error fetching dashboard:', error)
-    return NextResponse.json({ error: 'Gagal mengambil data dashboard' }, { status: 500 })
+    return NextResponse.json(EMPTY_DASHBOARD)
   }
 }

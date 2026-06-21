@@ -26,6 +26,6 @@ export async function DELETE(
     return NextResponse.json({ message: 'Transaksi berhasil dihapus' })
   } catch (error) {
     console.error('Error deleting transaction:', error)
-    return NextResponse.json({ error: 'Gagal menghapus transaksi' }, { status: 500 })
+    return NextResponse.json({ error: 'Gagal menghapus transaksi. Database belum terhubung.' }, { status: 500 })
   }
 }

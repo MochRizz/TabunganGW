@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching transactions:', error)
-    return NextResponse.json({ error: 'Gagal mengambil data transaksi' }, { status: 500 })
+    return NextResponse.json({ transactions: [], total: 0, page: 1, limit: 10, totalPages: 0 })
   }
 }
 
@@ -97,6 +97,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(transaction, { status: 201 })
   } catch (error) {
     console.error('Error creating transaction:', error)
-    return NextResponse.json({ error: 'Gagal membuat transaksi' }, { status: 500 })
+    return NextResponse.json({ error: 'Gagal membuat transaksi. Database belum terhubung.' }, { status: 500 })
   }
 }

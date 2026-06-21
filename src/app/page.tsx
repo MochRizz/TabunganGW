@@ -101,12 +101,17 @@ import {
 
 // ── Safe Fetch Helper ────────────────────────────────
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init)
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error((body as Record<string, string>).error || `API error ${res.status}`)
+  try {
+    const res = await fetch(url, init)
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      throw new Error((body as Record<string, string>).error || `API error ${res.status}`)
+    }
+    return (await res.json()) as T
+  } catch (error) {
+    if (error instanceof Error) throw error
+    throw new Error('Network error')
   }
-  return res.json() as Promise<T>
 }
 
 // ── Types ──────────────────────────────────────────────
