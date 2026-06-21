@@ -1,9 +1,25 @@
 import { db } from '@/lib/db'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function DELETE() {
+async function getUserFromRequest(request: Request) {
+  const userId = request.headers.get('x-user-id')
+  if (!userId) return null
+  return db.user.findUnique({ where: { id: userId } })
+}
+
+export async function DELETE(request: NextRequest) {
   try {
-    const result = await db.transaction.deleteMany({})
+    const user = await getUserFromRequest(request)
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const where = user.role === 'admin' ? {} : { userId: user.id }
+
+    const result = await db.transaction.deleteMany({ where })
     return NextResponse.json({
       success: true,
       deletedCount: result.count,

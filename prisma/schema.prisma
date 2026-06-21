@@ -7,12 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Vercel Postgres requires a relationMode when using serverless
-// This is handled automatically via the DATABASE_URL from Vercel
+model User {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  role      String   @default("user") // "admin" or "user"
+  status    String   @default("pending") // "pending", "approved", "rejected"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+
+  @@index([status])
+  @@index([role])
+}
 
 model Transaction {
   id          String   @id @default(cuid())
-  type        String   // "income" or "expense"
+  userId      String
+  type        String
   amount      Float
   category    String
   description String
@@ -20,6 +32,9 @@ model Transaction {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@index([type])
   @@index([date])
   @@index([category])

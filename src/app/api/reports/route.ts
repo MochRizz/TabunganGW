@@ -1,8 +1,19 @@
 import { db } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
+async function getUserFromRequest(request: Request) {
+  const userId = request.headers.get('x-user-id')
+  if (!userId) return null
+  return db.user.findUnique({ where: { id: userId } })
+}
+
 export async function GET(request: NextRequest) {
   try {
+    const user = await getUserFromRequest(request)
+    if (!user) {
+      return NextResponse.json({ monthlyTrend: [], categoryBreakdown: [] })
+    }
+
     const { searchParams } = new URL(request.url)
     const months = Math.min(12, Math.max(1, parseInt(searchParams.get('months') || '6')))
 
@@ -18,11 +29,11 @@ export async function GET(request: NextRequest) {
 
       const [incomeResult, expenseResult] = await Promise.all([
         db.transaction.aggregate({
-          where: { type: 'income', date: { gte: monthStart, lte: monthEnd } },
+          where: { type: 'income', date: { gte: monthStart, lte: monthEnd }, userId: user.id },
           _sum: { amount: true },
         }),
         db.transaction.aggregate({
-          where: { type: 'expense', date: { gte: monthStart, lte: monthEnd } },
+          where: { type: 'expense', date: { gte: monthStart, lte: monthEnd }, userId: user.id },
           _sum: { amount: true },
         }),
       ])
@@ -40,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     const categoryData = await db.transaction.groupBy({
       by: ['category'],
-      where: { type: 'expense', date: { gte: thisMonthStart, lte: thisMonthEnd } },
+      where: { type: 'expense', date: { gte: thisMonthStart, lte: thisMonthEnd }, userId: user.id },
       _sum: { amount: true },
       orderBy: { _sum: { amount: 'desc' } },
     })

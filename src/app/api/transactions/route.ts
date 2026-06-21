@@ -1,8 +1,19 @@
 import { db } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
+async function getUserFromRequest(request: Request) {
+  const userId = request.headers.get('x-user-id')
+  if (!userId) return null
+  return db.user.findUnique({ where: { id: userId } })
+}
+
 export async function GET(request: NextRequest) {
   try {
+    const user = await getUserFromRequest(request)
+    if (!user) {
+      return NextResponse.json({ transactions: [], total: 0, page: 1, limit: 10, totalPages: 0 })
+    }
+
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category') || ''
@@ -12,7 +23,7 @@ export async function GET(request: NextRequest) {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '10')))
 
-    const where: Record<string, unknown> = {}
+    const where: Record<string, unknown> = { userId: user.id }
 
     if (search) {
       where.description = { contains: search }
@@ -35,13 +46,13 @@ export async function GET(request: NextRequest) {
 
     const [transactions, total] = await Promise.all([
       db.transaction.findMany({
-        where: Object.keys(where).length > 0 ? where : undefined,
+        where,
         orderBy: { date: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
       db.transaction.count({
-        where: Object.keys(where).length > 0 ? where : undefined,
+        where,
       }),
     ])
 
@@ -60,6 +71,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getUserFromRequest(request)
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const { type, amount, category, description, date } = body
 
@@ -86,6 +105,7 @@ export async function POST(request: NextRequest) {
 
     const transaction = await db.transaction.create({
       data: {
+        userId: user.id,
         type,
         amount: parseFloat(amount),
         category,

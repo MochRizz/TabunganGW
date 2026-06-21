@@ -39,6 +39,8 @@ import {
   CircleDollarSign,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
+  ShieldCheck,
 } from 'lucide-react'
 import {
   PieChart,
@@ -55,6 +57,8 @@ import {
 } from 'recharts'
 
 import { useAppStore, type TabType } from '@/lib/store'
+import AuthScreen from '@/components/auth-screen'
+import AdminPanel from '@/components/admin-panel'
 import {
   formatCurrency,
   formatDate,
@@ -176,12 +180,18 @@ const transactionSchema = z.object({
 type TransactionForm = z.infer<typeof transactionSchema>
 
 // ── Sidebar Nav Items ──────────────────────────────────
-const NAV_ITEMS: { id: TabType; label: string; icon: React.ReactNode }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-  { id: 'riwayat', label: 'Riwayat', icon: <Clock className="h-5 w-5" /> },
-  { id: 'laporan', label: 'Laporan', icon: <BarChart3 className="h-5 w-5" /> },
-  { id: 'tambah', label: 'Tambah Transaksi', icon: <PlusCircle className="h-5 w-5" /> },
-]
+function getNavItems(user: { role: string } | null): { id: TabType; label: string; icon: React.ReactNode }[] {
+  const items: { id: TabType; label: string; icon: React.ReactNode }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+    { id: 'riwayat', label: 'Riwayat', icon: <Clock className="h-5 w-5" /> },
+    { id: 'laporan', label: 'Laporan', icon: <BarChart3 className="h-5 w-5" /> },
+    { id: 'tambah', label: 'Tambah Transaksi', icon: <PlusCircle className="h-5 w-5" /> },
+  ]
+  if (user?.role === 'admin') {
+    items.push({ id: 'admin', label: 'Admin Panel', icon: <ShieldCheck className="h-5 w-5" /> })
+  }
+  return items
+}
 
 // ── Chart Colors ───────────────────────────────────────
 const PIE_COLORS = ['#e11d48', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6']
@@ -211,14 +221,25 @@ const pageVariants = {
 
 // ── Main Component ─────────────────────────────────────
 export default function Home() {
-  const { activeTab, setActiveTab } = useAppStore()
+  const { activeTab, setActiveTab, user, setUser } = useAppStore()
   const [isMobileNavVisible, setIsMobileNavVisible] = useState(false)
+  const navItems = getNavItems(user)
+
+  // Auth gate
+  if (!user) {
+    return <AuthScreen />
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setActiveTab('dashboard')
+  }
 
   return (
     <div className="min-h-screen flex bg-[#f8f9ff]">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 bg-white border-r border-[#e2e8f0] z-30">
-        <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} />
+        <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} user={user} onLogout={handleLogout} />
       </aside>
 
       {/* Mobile Sidebar Overlay */}
@@ -233,7 +254,7 @@ export default function Home() {
           isMobileNavVisible ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <SidebarContent activeTab={activeTab} setActiveTab={(tab) => { setActiveTab(tab); setIsMobileNavVisible(false) }} />
+        <SidebarContent activeTab={activeTab} setActiveTab={(tab) => { setActiveTab(tab); setIsMobileNavVisible(false) }} user={user} onLogout={handleLogout} />
       </aside>
 
       {/* Main Content */}
@@ -244,7 +265,7 @@ export default function Home() {
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
           </button>
           <span className="font-bold text-[#4f46e5]">TabunganKu</span>
-          <div className="w-8" />
+          <span className="text-xs text-muted-foreground">{user.name}</span>
         </header>
 
         <div className="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">
@@ -274,6 +295,11 @@ export default function Home() {
                 <PengaturanTab />
               </motion.div>
             )}
+            {activeTab === 'admin' && user.role === 'admin' && (
+              <motion.div key="admin" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+                <AdminPanel />
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </main>
@@ -281,7 +307,7 @@ export default function Home() {
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#e2e8f0] z-30 px-2 pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-around py-1.5">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
@@ -293,7 +319,7 @@ export default function Home() {
               aria-label={item.label}
             >
               {item.icon}
-              <span className="text-[10px] leading-tight">{item.label}</span>
+              <span className="text-[10px] leading-tight">{item.label === 'Admin Panel' ? 'Admin' : item.label}</span>
             </button>
           ))}
         </div>
@@ -303,18 +329,19 @@ export default function Home() {
 }
 
 // ── Sidebar Content ────────────────────────────────────
-function SidebarContent({ activeTab, setActiveTab }: { activeTab: TabType; setActiveTab: (tab: TabType) => void }) {
+function SidebarContent({ activeTab, setActiveTab, user, onLogout }: { activeTab: TabType; setActiveTab: (tab: TabType) => void; user: { role: string; name: string }; onLogout: () => void }) {
+  const navItems = getNavItems(user)
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-6 border-b border-[#e2e8f0]">
         <h1 className="text-xl font-bold text-[#4f46e5]">TabunganKu</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Kelola Keuangan Anda</p>
+        <p className="text-xs text-muted-foreground mt-0.5">Halo, {user.name} 👋</p>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
-        {NAV_ITEMS.map((item) => (
+        {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
@@ -343,7 +370,10 @@ function SidebarContent({ activeTab, setActiveTab }: { activeTab: TabType; setAc
           <Settings className="h-5 w-5" />
           Pengaturan
         </button>
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors"
+        >
           <LogOut className="h-5 w-5" />
           Keluar
         </button>
@@ -354,7 +384,8 @@ function SidebarContent({ activeTab, setActiveTab }: { activeTab: TabType; setAc
 
 // ── Dashboard Tab ──────────────────────────────────────
 function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
-  const { data, isLoading } = useQuery<DashboardData>({
+  const { user } = useAppStore()
+  const { data, isLoading, refetch, isFetching } = useQuery<DashboardData>({
     queryKey: ['dashboard'],
     queryFn: () => apiFetch<DashboardData>('/api/dashboard'),
   })
@@ -380,7 +411,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Halo, Budi 👋</h2>
+          <h2 className="text-2xl font-bold text-foreground">Halo, {useAppStore.getState().user?.name ?? 'User'} 👋</h2>
           <p className="text-muted-foreground text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
         </div>
         <Card className="border-[#e2e8f0] shadow-[0px_2px_4px_rgba(0,0,0,0.05)]">
@@ -405,8 +436,21 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground">Halo, Budi 👋</h2>
-        <p className="text-muted-foreground text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Halo, {user?.name ?? 'User'} 👋</h2>
+            <p className="text-muted-foreground text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 border-[#e2e8f0]"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
       </div>
 
       {/* Total Saldo Card */}

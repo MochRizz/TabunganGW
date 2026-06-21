@@ -1,5 +1,11 @@
 import { db } from '@/lib/db'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+
+async function getUserFromRequest(request: Request) {
+  const userId = request.headers.get('x-user-id')
+  if (!userId) return null
+  return db.user.findUnique({ where: { id: userId } })
+}
 
 const EMPTY_DASHBOARD = {
   totalSaldo: 0,
@@ -11,8 +17,15 @@ const EMPTY_DASHBOARD = {
   percentageChange: 0,
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const user = await getUserFromRequest(request)
+    if (!user) {
+      return NextResponse.json(EMPTY_DASHBOARD)
+    }
+
+    const userIdFilter = { userId: user.id }
+
     const now = new Date()
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
     const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
@@ -30,36 +43,37 @@ export async function GET() {
       expenseByCategory,
     ] = await Promise.all([
       db.transaction.aggregate({
-        where: { type: 'income' },
+        where: { type: 'income', ...userIdFilter },
         _sum: { amount: true },
       }),
       db.transaction.aggregate({
-        where: { type: 'expense' },
+        where: { type: 'expense', ...userIdFilter },
         _sum: { amount: true },
       }),
       db.transaction.aggregate({
-        where: { type: 'income', date: { gte: thisMonthStart, lte: thisMonthEnd } },
+        where: { type: 'income', date: { gte: thisMonthStart, lte: thisMonthEnd }, ...userIdFilter },
         _sum: { amount: true },
       }),
       db.transaction.aggregate({
-        where: { type: 'expense', date: { gte: thisMonthStart, lte: thisMonthEnd } },
+        where: { type: 'expense', date: { gte: thisMonthStart, lte: thisMonthEnd }, ...userIdFilter },
         _sum: { amount: true },
       }),
       db.transaction.aggregate({
-        where: { type: 'income', date: { gte: lastMonthStart, lte: lastMonthEnd } },
+        where: { type: 'income', date: { gte: lastMonthStart, lte: lastMonthEnd }, ...userIdFilter },
         _sum: { amount: true },
       }),
       db.transaction.aggregate({
-        where: { type: 'expense', date: { gte: lastMonthStart, lte: lastMonthEnd } },
+        where: { type: 'expense', date: { gte: lastMonthStart, lte: lastMonthEnd }, ...userIdFilter },
         _sum: { amount: true },
       }),
       db.transaction.findMany({
+        where: userIdFilter,
         orderBy: { date: 'desc' },
         take: 5,
       }),
       db.transaction.groupBy({
         by: ['category'],
-        where: { type: 'expense', date: { gte: thisMonthStart, lte: thisMonthEnd } },
+        where: { type: 'expense', date: { gte: thisMonthStart, lte: thisMonthEnd }, ...userIdFilter },
         _sum: { amount: true },
         orderBy: { _sum: { amount: 'desc' } },
         take: 5,
@@ -78,7 +92,7 @@ export async function GET() {
       ? ((thisMonthNet - previousMonthSaldo) / Math.abs(previousMonthSaldo)) * 100
       : thisMonthNet > 0 ? 100 : 0
 
-    return NextResponse.json({
+    const response: Record<string, unknown> = {
       totalSaldo,
       totalIncomeThisMonth,
       totalExpenseThisMonth,
@@ -89,7 +103,21 @@ export async function GET() {
       })),
       previousMonthSaldo,
       percentageChange,
-    })
+    }
+
+    // Admin gets additional stats
+    if (user.role === 'admin') {
+      const [totalUsers, pendingUsers] = await Promise.all([
+        db.user.count(),
+        db.user.count({ where: { status: 'pending' } }),
+      ])
+      response.allUsersStats = {
+        totalUsers,
+        pendingCount: pendingUsers,
+      }
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error fetching dashboard:', error)
     return NextResponse.json(EMPTY_DASHBOARD)

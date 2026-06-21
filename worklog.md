@@ -85,3 +85,56 @@ Stage Summary:
 - App fully working at https://tabungangw.vercel.app
 - No more 500 errors or undefined crashes
 - All CRUD operations verified (read, create, delete)
+---
+Task ID: backend-api
+Agent: general-purpose
+Task: Create auth and admin API routes, update existing routes with userId
+
+Work Log:
+- Created POST /api/auth/request-account
+- Created POST /api/auth/login  
+- Created GET /api/admin/users
+- Created PATCH /api/admin/users/[id]/approve
+- Created PATCH /api/admin/users/[id]/reject
+- Created DELETE /api/admin/users/[id]
+- Updated all existing API routes to filter by userId via X-User-Id header
+
+Stage Summary:
+- All 6 new API routes created
+- All 5 existing API routes updated with userId filtering
+- Admin role verification on all admin routes
+---
+Task ID: frontend-auth-admin
+Agent: general-purpose
+Task: Create auth-screen and admin-panel frontend components
+
+Work Log:
+- Updated src/lib/store.ts: Added AppUser interface, user state (AppUser | null), and setUser action to Zustand store
+- Created src/components/auth-screen.tsx:
+  - Beautiful centered auth card on bg-[#f8f9ff] background
+  - TabunganKu logo with Wallet icon in indigo
+  - Two styled tab buttons: "Masuk" (login) and "Daftar Akun" (register)
+  - Login form: name input with Wallet icon, POST /api/auth/login, handles pending/rejected/not-found errors
+  - Register form: name input, POST /api/auth/request-account, toast on success
+  - Admin login: "Masuk sebagai Admin" link at bottom, opens custom dialog overlay
+  - Admin dialog: pre-filled "Admin" name, 4-digit PIN input with Lock icon, POST /api/auth/login with pin
+  - Framer Motion fade-in animation on card, error messages animate in
+  - Loading spinner states on all submit buttons
+  - Responsive design, shadcn/ui Card/Button/Input components
+- Created src/components/admin-panel.tsx:
+  - Title "Admin Panel" with Shield icon
+  - Stats cards: Total Pengguna (approved count) and Menunggu Persetujuan (pending count)
+  - Pending Requests section: fetches GET /api/admin/users with X-User-Id header
+  - Each pending user card shows name, "Menunggu" amber badge, date, approve (green) and reject (red) buttons
+  - All Users section: card list with name, status badge (approved=green, pending=amber, rejected=red), role badge, transaction count, join date
+  - Delete button with Trash2 icon, confirmation Dialog before delete, admin and self-deletion disabled
+  - TanStack Query useQuery for data fetching, useMutation for approve/reject/delete with auto refetch
+  - Framer Motion AnimatePresence for list animations
+  - Skeleton loading states, empty state messages
+  - Max height with scroll overflow on user lists
+
+Stage Summary:
+- Store updated with user state management
+- Auth screen component with login, register, and admin login flows
+- Admin panel component with user management (approve, reject, delete)
+- Both components use shadcn/ui, Framer Motion, TanStack Query, Zustand store
