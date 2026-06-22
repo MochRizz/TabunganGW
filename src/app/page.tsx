@@ -460,12 +460,12 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white">Halo, {user?.name ?? 'User'} 👋</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white">Halo, {user?.name ?? 'User'} 👋</h2>
             <p className="text-white/50 text-sm mt-1">Berikut ringkasan keuangan Anda hari ini.</p>
           </div>
           <Button
@@ -542,7 +542,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
           </CardHeader>
           <CardContent className="p-4">
             {pieData.length > 0 ? (
-              <ChartContainer config={pieChartConfig} className="h-[280px] w-full">
+              <ChartContainer config={pieChartConfig} className="h-[220px] sm:h-[260px] lg:h-[280px] w-full">
                 <PieChart>
                   <Pie
                     data={pieData}
@@ -563,7 +563,7 @@ function DashboardTab({ onNavigate }: { onNavigate: (tab: TabType) => void }) {
                 </PieChart>
               </ChartContainer>
             ) : (
-              <div className="h-[280px] flex items-center justify-center text-white/50 text-sm">
+              <div className="h-[220px] sm:h-[260px] lg:h-[280px] flex items-center justify-center text-white/50 text-sm">
                 Belum ada pengeluaran bulan ini
               </div>
             )}
@@ -674,8 +674,8 @@ function RiwayatTab() {
   const hasFilters = search || category || type || dateRange !== 'all'
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white">Riwayat Transaksi</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-white">Riwayat Transaksi</h2>
 
       {/* Error State */}
       {isError && (
@@ -689,7 +689,7 @@ function RiwayatTab() {
 
       {/* Filters */}
       <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
@@ -968,31 +968,32 @@ function LaporanTab() {
   const categoryBreakdown = data?.categoryBreakdown ?? []
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white">Laporan Pengeluaran</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-white">Laporan Pengeluaran</h2>
 
       {/* Monthly Trend */}
       <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 px-4 sm:px-6">
           <CardTitle className="text-base font-semibold text-white">Tren Bulanan</CardTitle>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           {isLoading ? (
-            <Skeleton className="h-[350px] w-full" />
+            <Skeleton className="h-[220px] sm:h-[280px] lg:h-[350px] w-full" />
           ) : monthlyTrend.length > 0 ? (
-            <ChartContainer config={barChartConfig} className="h-[350px] w-full">
+            <ChartContainer config={barChartConfig} className="h-[220px] sm:h-[280px] lg:h-[350px] w-full">
               <BarChart data={monthlyTrend} barGap={4} barCategoryGap="20%">
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                 <XAxis
                   dataKey="month"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.4)' }}
+                  tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.4)' }}
                 />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.4)' }}
+                  width={45}
+                  tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.4)' }}
                   tickFormatter={(value: number) => `${(value / 1000000).toFixed(1)}jt`}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
@@ -1007,10 +1008,10 @@ function LaporanTab() {
 
       {/* Category Breakdown */}
       <Card className="bg-white/10 backdrop-blur-xl border-white/10 shadow-lg">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 px-4 sm:px-6">
           <CardTitle className="text-base font-semibold text-white">Breakdown Kategori Bulan Ini</CardTitle>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           {isLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
